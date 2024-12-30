@@ -313,8 +313,8 @@ class ModelRunner:
         result,
     )
     result = dict(result)
-    identifier = self.model_params['__meta__']['__identifier__'].tobytes()
-    result['__identifier__'] = identifier
+    # identifier = self.model_params['__meta__']['__identifier__'].tobytes()
+    # result['__identifier__'] = identifier
     return result
 
   def extract_structures(

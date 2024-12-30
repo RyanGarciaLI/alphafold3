@@ -508,7 +508,7 @@ class Diffuser(hk.Module):
               'token_chain_ids': chain_ids,
               'token_res_ids': res_ids,
           },
-          model_id=result['__identifier__'],
+        #   model_id=result['__identifier__'],
           debug_outputs={},
       )
 
