@@ -48,10 +48,15 @@ def calculate_bucket_size(
   bucket_idx = bisect.bisect_left(buckets, num_tokens)
 
   if bucket_idx == len(buckets):
-    raise ValueError(
-        f'Number of tokens {num_tokens} is more than the largest currently'
-        f' supported bucket size {buckets[-1]}.'
+    logging.warning(
+        'Creating a new bucket of size %d since the input has more tokens than'
+        ' the largest bucket size %d. This may trigger a re-compilation of the'
+        ' model. Consider additional large bucket sizes to avoid excessive'
+        ' re-compilation.',
+        num_tokens,
+        buckets[-1],
     )
+    return num_tokens
 
   return buckets[bucket_idx]
 
@@ -97,7 +102,6 @@ class WholePdbPipeline:
       max_paired_sequence_per_species: The maximum number of sequences per
         species that will be used for MSA pairing.
       drop_ligand_leaving_atoms: Flag for handling leaving atoms for ligands.
-      intra_ligand_ptm_bonds: Whether to embed intra ligand covalent bond graph.
       average_num_atoms_per_token: Target average number of atoms per token to
         compute the padding size for flat atoms.
       atom_cross_att_queries_subset_size: queries subset size in atom cross
@@ -123,13 +127,13 @@ class WholePdbPipeline:
     filter_crystal_aids: bool = False
     max_paired_sequence_per_species: int = 600
     drop_ligand_leaving_atoms: bool = True
-    intra_ligand_ptm_bonds: bool = True
     average_num_atoms_per_token: int = 24
     atom_cross_att_queries_subset_size: int = 32
     atom_cross_att_keys_subset_size: int = 128
     flatten_non_standard_residues: bool = True
     remove_nonsymmetric_bonds: bool = False
     deterministic_frames: bool = True
+    conformer_max_iterations: int | None = None
 
   def __init__(
       self,
@@ -250,8 +254,18 @@ class WholePdbPipeline:
           f'({total_tokens} < {self._config.min_total_residues})'
       )
 
+    logging.info(
+        'Calculating bucket size for input with %d tokens.', total_tokens
+    )
     padded_token_length = calculate_bucket_size(
         total_tokens, self._config.buckets
+    )
+    logging.info(
+        'Got bucket size %d for input with %d tokens, resulting in %d padded'
+        ' tokens.',
+        padded_token_length,
+        total_tokens,
+        padded_token_length - total_tokens,
     )
 
     # Padding shapes for all features.
@@ -335,6 +349,7 @@ class WholePdbPipeline:
     )
 
     ref_max_modified_date = self._config.max_template_date
+    conformer_max_iterations = self._config.conformer_max_iterations
     batch_ref_structure, ligand_ligand_bonds = (
         features.RefStructure.compute_features(
             all_token_atoms_layout=all_token_atoms_layout,
@@ -343,7 +358,7 @@ class WholePdbPipeline:
             chemical_components_data=chemical_components_data,
             random_state=random_state,
             ref_max_modified_date=ref_max_modified_date,
-            intra_ligand_ptm_bonds=self._config.intra_ligand_ptm_bonds,
+            conformer_max_iterations=conformer_max_iterations,
             ligand_ligand_bonds=ligand_ligand_bonds,
         )
     )
@@ -358,7 +373,7 @@ class WholePdbPipeline:
               np.random.RandomState(_DETERMINISTIC_FRAMES_RANDOM_SEED)
           ),
           ref_max_modified_date=ref_max_modified_date,
-          intra_ligand_ptm_bonds=self._config.intra_ligand_ptm_bonds,
+          conformer_max_iterations=None,
           ligand_ligand_bonds=ligand_ligand_bonds,
       )
 

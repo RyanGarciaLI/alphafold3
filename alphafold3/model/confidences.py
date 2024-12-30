@@ -334,6 +334,9 @@ def weighted_nanmean(
   with warnings.catch_warnings():
     # Mean of empty slice is ok and should return a NaN.
     warnings.filterwarnings(action='ignore', message='Mean of empty slice')
+    warnings.filterwarnings(
+        action='ignore', message='invalid value encountered in (scalar )?divide'
+    )
     return np.nanmean(value * mask_with_nan, axis=axis) / np.nanmean(
         mask_with_nan, axis=axis
     )
@@ -525,9 +528,12 @@ def pae_metrics(
 
     ichain, xchain_row_agg = inner(False)
     _, xchain_col_agg = inner(True)
-    xchain = np.nanmean(
-        np.stack([xchain_row_agg, xchain_col_agg], axis=0), axis=0
-    )
+    with warnings.catch_warnings():
+      # Mean of empty slice is ok and should return a NaN.
+      warnings.filterwarnings(action='ignore', message='Mean of empty slice')
+      xchain = np.nanmean(
+          np.stack([xchain_row_agg, xchain_col_agg], axis=0), axis=0
+      )
     return ichain, xchain
 
   pae_ichain, pae_xchain = reduce_chain_pair_fn(chain_pair_contact_weighted)
@@ -551,7 +557,13 @@ def get_iptm_xchain(chain_pair_iptm: np.ndarray) -> np.ndarray:
   weight -= np.eye(num_chains, dtype=float)
   xchain_row_agg = weighted_nanmean(chain_pair_iptm, mask=weight, axis=-2)
   xchain_col_agg = weighted_nanmean(chain_pair_iptm, mask=weight, axis=-1)
-  return np.nanmean(np.stack([xchain_row_agg, xchain_col_agg], axis=0), axis=0)
+  with warnings.catch_warnings():
+    # Mean of empty slice is ok and should return a NaN.
+    warnings.filterwarnings(action='ignore', message='Mean of empty slice')
+    iptm_xchain = np.nanmean(
+        np.stack([xchain_row_agg, xchain_col_agg], axis=0), axis=0
+    )
+  return iptm_xchain
 
 
 def predicted_tm_score(
