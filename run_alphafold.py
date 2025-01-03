@@ -309,7 +309,7 @@ class ModelRunner:
 
     path_to_save = f"./content/alphafold3/output_casp15_protein/batch_{self.job_name}.pkl"
     print(f">>>>>> [INFO] [ModelRunner] after remove strings, Saving batch to {path_to_save}")
-    with open(path_to_save, 'rb') as file:
+    with open(path_to_save, 'wb') as file:
       pickle.dump(featurised_example, file)
     print(f">>>>>> [INFO] [ModelRunner] Done.")
 
@@ -394,7 +394,7 @@ def predict_structure(
   ### DEBUG
   path_to_save = f"./content/alphafold3/output_casp15_protein/all_feats_{fold_input.name}.pkl"
   print(f">>>>>> [INFO] [ModelRunner] Saving All featurised_example to {path_to_save}")
-  with open(path_to_save, 'rb') as file:
+  with open(path_to_save, 'wb') as file:
     pickle.dump(featurised_examples, file)
   print(f">>>>>> [INFO] [ModelRunner] Done.")
 

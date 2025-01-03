@@ -266,11 +266,11 @@ class Diffuser(hk.Module):
     if key is None:
       key = hk.next_rng_key()
 
-    path_to_save = "./content/batch.pkl"
-    print(f">>>>>> [INFO] [Diffuser] Saving batch to {path_to_save}")
-    with open(path_to_save, 'rb') as file:
-      pickle.dump(batch, file)
-    print(f">>>>>> [INFO] [Diffuser] Done.")
+    # path_to_save = "./content/batch.pkl"
+    # print(f">>>>>> [INFO] [Diffuser] Saving batch to {path_to_save}")
+    # with open(path_to_save, 'wb') as file:
+    #   pickle.dump(batch, file)
+    # print(f">>>>>> [INFO] [Diffuser] Done.")
 
     batch = feat_batch.Batch.from_data_dict(batch)
 
