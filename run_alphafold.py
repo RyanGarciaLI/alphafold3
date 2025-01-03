@@ -392,11 +392,11 @@ def predict_structure(
   )
 
   ### DEBUG
-  path_to_save = f"/content/alphafold3/output_casp15_protein/all_feats_{fold_input.name}.pkl"
-  print(f">>>>>> [INFO] [ModelRunner] Saving All featurised_example to {path_to_save}")
-  with open(path_to_save, 'wb') as file:
-    pickle.dump(featurised_examples, file)
-  print(f">>>>>> [INFO] [ModelRunner] Done.")
+  # path_to_save = f"/content/alphafold3/output_casp15_protein/all_feats_{fold_input.name}.pkl"
+  # print(f">>>>>> [INFO] [ModelRunner] Saving All featurised_example to {path_to_save}")
+  # with open(path_to_save, 'wb') as file:
+  #   pickle.dump(featurised_examples, file)
+  # print(f">>>>>> [INFO] [ModelRunner] Done.")
 
   ### DEBUG
   model_runner.job_name = fold_input.name
