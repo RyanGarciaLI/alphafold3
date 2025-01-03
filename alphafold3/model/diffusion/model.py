@@ -39,6 +39,7 @@ import haiku as hk
 import jax
 import jax.numpy as jnp
 import numpy as np
+import pickle
 
 
 ModelResult: TypeAlias = Mapping[str, Any]
@@ -264,6 +265,12 @@ class Diffuser(hk.Module):
   ) -> ModelResult:
     if key is None:
       key = hk.next_rng_key()
+
+    path_to_save = "./content/batch.pkl"
+    print(f">>>>>> [INFO] [Diffuser] Saving batch to {path_to_save}")
+    with open(path_to_save, 'rb') as file:
+      pickle.dump(batch, file)
+    print(f">>>>>> [INFO] [Diffuser] Done.")
 
     batch = feat_batch.Batch.from_data_dict(batch)
 

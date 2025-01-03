@@ -52,6 +52,7 @@ import haiku as hk
 import jax
 from jax import numpy as jnp
 import numpy as np
+import pickle
 
 
 _HOME_DIR = pathlib.Path(os.environ.get('HOME'))
@@ -306,6 +307,12 @@ class ModelRunner:
         self._device,
     )
 
+    path_to_save = f"./content/alphafold3/output_casp15_protein/batch_{self.job_name}.pkl"
+    print(f">>>>>> [INFO] [ModelRunner] after remove strings, Saving batch to {path_to_save}")
+    with open(path_to_save, 'rb') as file:
+      pickle.dump(featurised_example, file)
+    print(f">>>>>> [INFO] [ModelRunner] Done.")
+
     result = self._model(rng_key, featurised_example)
     result = jax.tree.map(np.asarray, result)
     result = jax.tree.map(
@@ -383,6 +390,17 @@ def predict_structure(
       f'Featurising data for seeds {fold_input.rng_seeds} took '
       f' {time.time() - featurisation_start_time:.2f} seconds.'
   )
+
+  ### DEBUG
+  path_to_save = f"./content/alphafold3/output_casp15_protein/all_feats_{fold_input.name}.pkl"
+  print(f">>>>>> [INFO] [ModelRunner] Saving All featurised_example to {path_to_save}")
+  with open(path_to_save, 'rb') as file:
+    pickle.dump(featurised_examples, file)
+  print(f">>>>>> [INFO] [ModelRunner] Done.")
+
+  ### DEBUG
+  model_runner.job_name = fold_input.name
+
   all_inference_start_time = time.time()
   all_inference_results = []
   for seed, example in zip(fold_input.rng_seeds, featurised_examples):
