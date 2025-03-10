@@ -46,6 +46,13 @@ ModelResult: TypeAlias = Mapping[str, Any]
 _ScalarNumberOrArray: TypeAlias = Mapping[str, float | int | np.ndarray]
 
 
+def print_tensor(marker, tensor):
+    dtype = tensor.dtype
+    # if tensor.dtype == paddle.bfloat16:
+    #     tensor = tensor.cast(paddle.float32)
+    jax.debug.print(f">>>>>> [DEBUG] [{marker}] {dtype} max {tensor.max()} median {tensor.median()} std {tensor.std()} dtype {dtype} shape {tensor.shape}")
+
+
 @dataclasses.dataclass(frozen=True)
 class InferenceResult:
   """Postprocessed model result.
@@ -312,6 +319,10 @@ class Diffuser(hk.Module):
       # Number of recycles is number of additional forward trunk passes.
       num_iter = self.config.num_recycles + 1
       embeddings, _ = hk.fori_loop(0, num_iter, recycle_body, (embeddings, key))
+
+    print_tensor("single", embeddings['single'])
+    print_tensor("pair", embeddings['pair'])
+    print_tensor("target_feat", embeddings['target_feat'])
 
     samples = self._sample_diffusion(
         batch,
