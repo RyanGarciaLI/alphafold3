@@ -50,7 +50,13 @@ def print_tensor(marker, tensor):
     dtype = tensor.dtype
     # if tensor.dtype == paddle.bfloat16:
     #     tensor = tensor.cast(paddle.float32)
-    jax.debug.print(f">>>>>> [DEBUG] [{marker}] {dtype} max {tensor.max()} median {tensor.median()} std {tensor.std()} dtype {dtype} shape {tensor.shape}")
+    # mean = jnp.mean(tensor)
+    median = jnp.median(tensor)
+    std = jnp.std(tensor)
+    max_v = jnp.max(tensor)
+    # min_v = jnp.min(tensor)
+    jax.debug.print(">>>>>> [DEBUG] {} max {} median {} std {} dtype {} shape {}", 
+                    marker, max_v, median, std, tensor.dtype, tensor.shape)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -320,9 +326,12 @@ class Diffuser(hk.Module):
       num_iter = self.config.num_recycles + 1
       embeddings, _ = hk.fori_loop(0, num_iter, recycle_body, (embeddings, key))
 
+    seq_mask = batch.token_features.mask
+    token_len = seq_mask.sum()
+    jax.debug.print("seq_mask shape {} {}", seq_mask.shape, token_len)
     print_tensor("single", embeddings['single'])
     print_tensor("pair", embeddings['pair'])
-    print_tensor("target_feat", embeddings['target_feat'])
+    print_tensor("single_input", embeddings['target_feat'])
 
     samples = self._sample_diffusion(
         batch,
