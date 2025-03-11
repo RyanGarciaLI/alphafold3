@@ -326,12 +326,21 @@ class Diffuser(hk.Module):
       num_iter = self.config.num_recycles + 1
       embeddings, _ = hk.fori_loop(0, num_iter, recycle_body, (embeddings, key))
 
-    seq_mask = batch.token_features.mask
-    token_len = seq_mask.sum()
-    jax.debug.print("seq_mask shape {} {}", seq_mask.shape, token_len)
-    print_tensor("single", embeddings['single'])
-    print_tensor("pair", embeddings['pair'])
-    print_tensor("single_input", embeddings['target_feat'])
+    # seq_mask = batch.token_features.mask
+    # token_len = seq_mask.sum()
+    # pair_mask = seq_mask[:,None] * seq_mask[None]
+    # jax.debug.print("seq_mask shape {} {}", seq_mask.shape, token_len)
+    # jax.debug.print("pair_mask shape {} {}", seq_mask.shape, token_len)
+    # print_tensor("single", embeddings['single'])
+    # print_tensor("pair", embeddings['pair'])
+    # print_tensor("single_input", embeddings['target_feat'])
+    # vis_single = embeddings['single'] * seq_mask[:,None]
+    # vis_single_input = embeddings['target_feat'] * seq_mask[:,None]
+    # vis_pair = embeddings['pair'] * pair_mask[...,None]
+    # print_tensor("vis_single", vis_single)
+    # print_tensor("vis_pair", vis_pair)
+    # print_tensor("vis_single_input", vis_single_input)
+
 
     samples = self._sample_diffusion(
         batch,
