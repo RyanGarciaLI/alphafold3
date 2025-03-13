@@ -342,7 +342,7 @@ class Diffuser(hk.Module):
     # print_tensor("vis_pair", vis_pair)
     # print_tensor("vis_single_input", vis_single_input)
 
-    foo.enable_vis = False
+    foo.enable_vis = True
     samples = self._sample_diffusion(
         batch,
         embeddings,
