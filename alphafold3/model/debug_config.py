@@ -8,7 +8,8 @@ def print_tensor(marker, tensor):
     # mean = jnp.mean(tensor)
     median = jnp.median(tensor)
     std = jnp.std(tensor)
-    max_v = jnp.max(tensor).block_until_ready()
+    max_v = jnp.max(tensor)
     # min_v = jnp.min(tensor)
     jax.debug.print(">>>>>> [DEBUG] {} max {} median {} std {} dtype {} shape {}", 
                     marker, max_v, median, std, tensor.dtype, tensor.shape)
+    

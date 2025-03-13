@@ -156,7 +156,7 @@ def self_attention(
   q = q.astype(jnp.float32)
   k = k.astype(jnp.float32)
   bias = bias.astype(jnp.float32)
-  logits = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k) + bias
+  
   alpha0 = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k)
   if foo.enable_vis:
     jax.debug.print("mask shape {} {}", mask.shape, mask.dtype)
@@ -166,9 +166,11 @@ def self_attention(
     bias0 = bias * pair_mask.astype(bias)
     print_tensor("Diff_Atten_alpha0", alpha0)
     print_tensor("DIff_Atten_b", bias0)
-    print_tensor("DIff_Atten_b_fp32", bias0.astype(jnp.float32))
+    # print_tensor("DIff_Atten_b_fp32", bias0.astype(jnp.float32))
     print_tensor("DIff_Atten_b", bias)
     foo.enable_vis = False
+  logits = alpha0 + bias
+  # logits = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k) + bias
 
   if pair_logits is not None:
     logits += pair_logits  # (num_heads, seq_len, seq_len)
