@@ -219,6 +219,7 @@ class Transformer(hk.Module):
       pair_cond: jnp.ndarray | None,
   ) -> jnp.ndarray:
     def block(act, pair_logits):
+      jax.debug.print("In transformer ", foo.enable_vis)
       act += self_attention(
           act,
           mask,
