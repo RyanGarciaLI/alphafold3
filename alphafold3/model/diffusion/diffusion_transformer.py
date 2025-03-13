@@ -166,6 +166,7 @@ def self_attention(
     bias0 = bias * pair_mask
     print_tensor("Diff_Atten_alpha0", alpha0)
     print_tensor("DIff_Atten_b", bias0)
+    foo.enable_vis = False
 
   if pair_logits is not None:
     logits += pair_logits  # (num_heads, seq_len, seq_len)
