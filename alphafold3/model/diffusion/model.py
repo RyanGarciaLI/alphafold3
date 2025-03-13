@@ -40,6 +40,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import pickle
+import alphafold3.model.debug_config as foo
 
 
 ModelResult: TypeAlias = Mapping[str, Any]
@@ -341,7 +342,7 @@ class Diffuser(hk.Module):
     # print_tensor("vis_pair", vis_pair)
     # print_tensor("vis_single_input", vis_single_input)
 
-
+    foo.enable_vis = False
     samples = self._sample_diffusion(
         batch,
         embeddings,
