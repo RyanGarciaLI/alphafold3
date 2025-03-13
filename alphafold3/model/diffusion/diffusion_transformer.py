@@ -159,9 +159,9 @@ def self_attention(
   logits = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k) + bias
   alpha0 = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k)
   if foo.enable_vis:
-    print("mask shape", mask.shape)
+    jax.debug.print("mask shape {}", mask.shape)
     pair_mask = mask[None] * mask[:, None]
-    print("alpha0 shape", alpha0.shape)
+    jax.debug.print("alpha0 shape {}", alpha0.shape)
     alpha0 = alpha0 * pair_mask
     bias0 = bias * pair_mask
     print_tensor("Diff_Atten_alpha0", alpha0)
@@ -230,6 +230,7 @@ class Transformer(hk.Module):
           name=self.name,
       )
       foo.enable_vis = False
+      jax.debug.print("In transformer set False {}", foo.enable_vis)
       act += transition_block(
           act,
           self.config.num_intermediate_factor,
