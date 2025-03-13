@@ -5,8 +5,6 @@ enable_vis = False
 
 def print_tensor(marker, tensor):
     dtype = tensor.dtype
-    # if tensor.dtype == paddle.bfloat16:
-    #     tensor = tensor.cast(paddle.float32)
     # mean = jnp.mean(tensor)
     median = jnp.median(tensor)
     std = jnp.std(tensor)
