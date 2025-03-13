@@ -158,8 +158,8 @@ def self_attention(
   bias = bias.astype(jnp.float32)
   
   alpha0 = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k)
+  bar = alpha0 * 0 + bias
   if foo.enable_vis:
-    bar = alpha0 * 0 + bias
     jax.debug.print("mask shape {} {}", mask.shape, mask.dtype)
     pair_mask = mask[None] * mask[:, None]
     jax.debug.print("alpha0 shape {} {}", alpha0.shape, alpha0.dtype)
