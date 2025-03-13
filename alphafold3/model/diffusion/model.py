@@ -266,6 +266,7 @@ class Diffuser(hk.Module):
         use_conditioning=True,
     )
 
+    jax.debug.print("start sample {}", foo.enable_vis)
     sample = diffusion_head.sample(
         denoising_step=denoising_step,
         batch=batch,
@@ -343,6 +344,7 @@ class Diffuser(hk.Module):
     # print_tensor("vis_single_input", vis_single_input)
 
     foo.enable_vis = True
+    jax.debug.print("Start _sample_diffusion")
     samples = self._sample_diffusion(
         batch,
         embeddings,
