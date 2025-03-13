@@ -293,7 +293,8 @@ class ModelRunner:
       return model.Diffuser(self._model_config)(batch)
 
     return functools.partial(
-        jax.jit(forward_fn.apply, device=self._device), self.model_params
+        # jax.jit(forward_fn.apply, device=self._device), self.model_params
+        forward_fn.apply, self.model_params
     )
 
   def run_inference(
