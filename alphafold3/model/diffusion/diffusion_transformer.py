@@ -19,6 +19,7 @@ import haiku as hk
 import jax
 from jax import numpy as jnp
 from alphafold3.model.debug_config import print_tensor
+import alphafold3.model.debug_config as foo
 
 
 def adaptive_layernorm(x, single_cond, name):
@@ -157,13 +158,14 @@ def self_attention(
   bias = bias.astype(jnp.float32)
   logits = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k) + bias
   alpha0 = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k)
-  print("mask shape", mask.shape)
-  pair_mask = mask[None] * mask[:, None]
-  print("alpha0 shape", alpha0.shape)
-  alpha0 = alpha0 * pair_mask
-  bias0 = bias * pair_mask
-  print_tensor("Diff_Atten_alpha0", alpha0)
-  print_tensor("DIff_Atten_b", bias0)
+  if foo.enable_vis:
+    print("mask shape", mask.shape)
+    pair_mask = mask[None] * mask[:, None]
+    print("alpha0 shape", alpha0.shape)
+    alpha0 = alpha0 * pair_mask
+    bias0 = bias * pair_mask
+    print_tensor("Diff_Atten_alpha0", alpha0)
+    print_tensor("DIff_Atten_b", bias0)
 
   if pair_logits is not None:
     logits += pair_logits  # (num_heads, seq_len, seq_len)
@@ -226,6 +228,7 @@ class Transformer(hk.Module):
           single_cond,
           name=self.name,
       )
+      foo.enable_vis = False
       act += transition_block(
           act,
           self.config.num_intermediate_factor,

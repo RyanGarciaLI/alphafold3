@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 
-enable_vis = False
+enable_vis = True
 
 def print_tensor(marker, tensor):
     dtype = tensor.dtype
