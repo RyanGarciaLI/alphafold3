@@ -160,17 +160,17 @@ def self_attention(
   alpha0 = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k)
   # bar = alpha0 * 0 + bias
   # if foo.enable_vis:
-  jax.debug.print("mask shape {} {}", mask.shape, mask.dtype)
+  # jax.debug.print("mask shape {} {}", mask.shape, mask.dtype)
   pair_mask = mask[None] * mask[:, None]
-  jax.debug.print("alpha0 shape {} {}", alpha0.shape, alpha0.dtype)
+  # jax.debug.print("alpha0 shape {} {}", alpha0.shape, alpha0.dtype)
   alpha0 = alpha0 * pair_mask.astype(alpha0)
-  bias0 = bias * pair_mask.astype(bias)
-  print_tensor("Diff_Atten_alpha0", alpha0)
+  # bias0 = bias * pair_mask.astype(bias)
+  # print_tensor("Diff_Atten_alpha0", alpha0)
   # print_tensor("DIff_Atten_bias0", bias0)
   # print_tensor("DIff_Atten_b_fp32", bias0.astype(jnp.float32))
   # print_tensor("DIff_Atten_bias", bias)
   # print_tensor("DIFF_Atten_bar", bar)
-  print_tensor("Diff_Atten_pair_logits", pair_logits)
+  # print_tensor("Diff_Atten_pair_logits", pair_logits)
   # foo.enable_vis = False
   logits = alpha0 + bias
   # logits = jnp.einsum('...qhc,...khc->...hqk', q * key_dim ** (-0.5), k) + bias
@@ -227,7 +227,6 @@ class Transformer(hk.Module):
       pair_cond: jnp.ndarray | None,
   ) -> jnp.ndarray:
     def block(act, pair_logits):
-      jax.debug.print("In transformer {}", foo.enable_vis)
       act += self_attention(
           act,
           mask,
@@ -237,8 +236,6 @@ class Transformer(hk.Module):
           single_cond,
           name=self.name,
       )
-      foo.enable_vis = False
-      jax.debug.print("In transformer set False {}", foo.enable_vis)
       act += transition_block(
           act,
           self.config.num_intermediate_factor,
