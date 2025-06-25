@@ -243,7 +243,6 @@ class DiffusionHead(hk.Module):
       act = enc.token_act
 
       # Token-token attention
-      jax.debug.print("+++++++++++++++++++++++++++++++++++ shit")
       chex.assert_shape(act, (None, self.config.per_token_channels))
       act = jnp.asarray(act, dtype=jnp.float32)
 
